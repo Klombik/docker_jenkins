@@ -1,11 +1,18 @@
-FROM jenkins/jenkins:latest
+FROM jenkins/jenkins:lts
 
-ENV JENKINS_HOME /var/jenkins_home
+USER root
 
-RUN mkdir -p /var/jenkins_home
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg2 \
+    software-properties-common
 
-VOLUME /var/jenkins_home
+# Install Docker CLI
+RUN curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 
-EXPOSE 8080
+# Add Jenkins user to docker group
+RUN usermod -aG docker jenkins
 
-CMD ["jenkins.sh"]
+USER jenkins
